@@ -1,3 +1,6 @@
+原始工程代码是通过tf-faster-rcnn\experiments\scripts目录下的train_faster_rcnn.sh调用tf-faster-rcnn\tools\trainval_net.py进行模型训练。
+为了方便使用pycharm对整个训练工程进行调试，故修改trianval_net.py使之不需要shell脚本引导，可以直接运行。
+
 ├── data     //数据目录主要保存一些数据集比如VOC2007、coco等
 │   ├── cache   //保存一些数据集的训练集和测试集的proposals,比如voc_2007_test_gt_roidb.pkl,格式[{ },{ },...,{ }]。程序首先从这读取，如果文件存在
                       //否则读取.xml文件得到proposal,同时在该目录下生成对应的.pkl文件  Note:训练集合和测试集变化了，一定的先delete该目录下的对应的.pkl文件
