@@ -37,7 +37,7 @@ CLASSES = ('__background__',
            'motorbike', 'person', 'pottedplant',
            'sheep', 'sofa', 'train', 'tvmonitor')
 
-NETS = {'vgg16': ('vgg16_faster_rcnn_iter_70000.ckpt',),'res101': ('res101_faster_rcnn_iter_110000.ckpt',)}
+NETS = {'vgg16': ('vgg16_faster_rcnn_iter_70000.ckpt',),'res101': ('res101_faster_rcnn_iter_50000.ckpt',)}
 DATASETS= {'pascal_voc': ('voc_2007_trainval',),'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',)}
 
 def vis_detections(im, class_name, dets, thresh=0.5):
@@ -105,7 +105,7 @@ def parse_args():
     parser.add_argument('--net', dest='demo_net', help='Network to use [vgg16 res101]',
                         choices=NETS.keys(), default='res101')
     parser.add_argument('--dataset', dest='dataset', help='Trained dataset [pascal_voc pascal_voc_0712]',
-                        choices=DATASETS.keys(), default='pascal_voc_0712')
+                        choices=DATASETS.keys(), default='voc_2007_trainval')
     args = parser.parse_args()
 
     return args

@@ -26,27 +26,34 @@ def parse_args():
   """
   parser = argparse.ArgumentParser(description='Test a Fast R-CNN network')
   parser.add_argument('--cfg', dest='cfg_file',
-            help='optional config file', default=None, type=str)
+                      help='optional config file',
+                      default='/home/zhangwei/PycharmProjects/DL/tf-faster-rcnn/experiments/cfgs/res101.yml',
+                      type=str)
   parser.add_argument('--model', dest='model',
-            help='model to test',
-            default=None, type=str)
+                      help='model to test',
+                      default='/home/zhangwei/PycharmProjects/DL/tf-faster-rcnn/output/res101/voc_2007_trainval/default/res101_faster_rcnn_iter_50000.ckpt',
+                      type=str)
   parser.add_argument('--imdb', dest='imdb_name',
-            help='dataset to test',
-            default='voc_2007_test', type=str)
-  parser.add_argument('--comp', dest='comp_mode', help='competition mode',
-            action='store_true')
+                      help='dataset to test',
+                      default='voc_2007_test', type=str)
+  parser.add_argument('--comp', dest='comp_mode',
+                      help='competition mode',
+                      action='store_true')
   parser.add_argument('--num_dets', dest='max_per_image',
-            help='max number of detections per image',
-            default=100, type=int)
+                      help='max number of detections per image',
+                      default=100,
+                      type=int)
   parser.add_argument('--tag', dest='tag',
-                        help='tag of the model',
-                        default='', type=str)
+                      help='tag of the model',
+                      default='',
+                      type=str)
   parser.add_argument('--net', dest='net',
                       help='vgg16, res50, res101, res152, mobile',
-                      default='res50', type=str)
+                      default='res101', type=str)
   parser.add_argument('--set', dest='set_cfgs',
-                        help='set config keys', default=None,
-                        nargs=argparse.REMAINDER)
+                      help='set config keys',
+                      default=['ANCHOR_SCALES', '[8,16,32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'TEST.STEPSIZE', '[5]'],
+                      nargs=argparse.REMAINDER)
 
   if len(sys.argv) == 1:
     parser.print_help()
