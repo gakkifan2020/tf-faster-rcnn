@@ -11,18 +11,32 @@ import tensorflow as tf
 import numpy as np
 from layer_utils.generate_anchors import generate_anchors
 
+'''
+实际上是对generate_anchors()的封装
+generate_anchors就是生成anchor的
+'''
+
+# 功能是给定不同的scales和ratios生成各种尺度的anchors
 def generate_anchors_pre(height, width, feat_stride, anchor_scales=(8,16,32), anchor_ratios=(0.5,1,2)):
   """ A wrapper function to generate anchors given different scales
     Also return the number of anchors in variable 'length'
   """
   anchors = generate_anchors(ratios=np.array(anchor_ratios), scales=np.array(anchor_scales))
-  A = anchors.shape[0]
+  A = anchors.shape[0]      # 9
+
+  # width、height是feature map的大小
   shift_x = np.arange(0, width) * feat_stride
   shift_y = np.arange(0, height) * feat_stride
+
+  # 通过meshgrid生成坐标矩阵
   shift_x, shift_y = np.meshgrid(shift_x, shift_y)
+
+  # 先拉直，然后叠在一起，最后xy互换
+  # 得到的shifts就是所有anchor再原图上的坐标
   shifts = np.vstack((shift_x.ravel(), shift_y.ravel(), shift_x.ravel(), shift_y.ravel())).transpose()
   K = shifts.shape[0]
   # width changes faster, so here it is H, W, C
+  # 计算出anchors，操作没看懂
   anchors = anchors.reshape((1, A, 4)) + shifts.reshape((1, K, 4)).transpose((1, 0, 2))
   anchors = anchors.reshape((K * A, 4)).astype(np.float32, copy=False)
   length = np.int32(anchors.shape[0])
