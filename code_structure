@@ -1,0 +1,58 @@
+├── data     //数据目录主要保存一些数据集比如VOC2007、coco等
+│   ├── cache   //保存一些数据集的训练集和测试集的proposals,比如voc_2007_test_gt_roidb.pkl,格式[{ },{ },...,{ }]。程序首先从这读取，如果文件存在
+                      //否则读取.xml文件得到proposal,同时在该目录下生成对应的.pkl文件  Note:训练集合和测试集变化了，一定的先delete该目录下的对应的.pkl文件
+│   ├── coco        //Python COCO API. The code requires the API to access COCO dataset.
+│   ├── demo        //保存几张图片(.jpg文件)，用于演示demo
+│   ├── imagenet_weights  //保存在ImageNet数据集训练好的分类模型(比如vgg16,res101),vgg16.ckpt和res101.ckpt
+│   ├── scripts                 //包含fetch_faster_rcnn_models.sh,该脚本可用来下载训练好的faster-rcnn模型
+│   ├── vgg16_voc_2007_trainval+voc_2012_trainval  //由原名为voc_0712_80k-110k.tgz解压出来的，faster-rcnn(vgg16)的模型
+│   ├── VOCdevkit       //PASCAL VOC 2007数据集开发工具箱
+│   ├── VOCdevkit2007 -> VOCdevkit   //软连接
+
+├── docker      //adding dockerfiles for different cuda versions
+│   ├── Dockerfile.cuda-7.5
+│   └── Dockerfile.cuda-8.0
+├── experiments
+│   ├── cfgs    //保存$NET.yml文件，针对具体网络的配置参数
+│   ├── logs    //保存每次训练和测试的日志
+│   └── scripts //保存三个.sh脚本，用于demo演示、测试和训练
+├── lib    //
+│   ├── datasets   //基类imdb  针对具体数据集的派生类如pascal_voc  coco
+│   ├── layer_utils  //与anchor proposal相关
+│   ├── Makefile
+│   ├── model   //config配置文件   nms bbox test train_val等
+│   ├── nets    //基类Network，针对具体网络的派生类(如mobilenet_v1，resnet_v1，vgg16)
+│   ├── nms     //c和cuda的加速代码，生成共享库(.so)
+│   ├── roi_data_layer  //RoI层
+│   ├── setup.py  //用于构建Cython模块
+│   └── utils  //一些辅助工具，计时、可视化
+├── LICENSE
+├── output  //保存训练模型和测试结果
+│   ├── res101   //在faster-rcnn(res101)
+│       ├── voc_2007_test    //测试结果，按类别保存的.pkl文件
+│       │   └── default
+│       ├── voc_2007_trainval   //训练的模型保存在该文件夹下
+│       │   └── default
+│       └── voc_2007_trainval+voc_2012_trainval  //在voc_07+voc_12上训练好的faster-rcnn(res101)模型 从/data目录下软链接过来的
+    └── vgg16
+        ├── voc_2007_test     //测试结果，按类别保存的.pkl文件
+        │   └── default
+        ├── voc_2007_trainval  //训练的模型保存在该文件夹下
+        │   └── default
+        └── voc_2007_trainval+voc_2012_trainval
+            └── default -> ../../../data/vgg16_voc_2007_trainval+voc_2012_trainval/   //软链接过来的faster-rcnn(vgg6)模型
+├── README.md
+├── run_demover1.sh   //演示demo
+├── run_test.sh       //测试
+├── run_train.sh      //训练+测试
+├── tensorboard       //可视化tensorboard
+│   ├── res101
+│   └── vgg16
+└── tools
+    ├── convert_from_depre.py
+    ├── demo.py
+    ├── _init_paths.py
+    ├── _init_paths.pyc
+    ├── reval.py
+    ├── test_net.py      //测试
+    └── trainval_net.py  //训练
