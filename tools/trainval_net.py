@@ -29,9 +29,10 @@ def parse_args():
   parser = argparse.ArgumentParser(description='Train a Fast R-CNN network')
   parser.add_argument('--cfg', dest='cfg_file',
                       help='optional config file',
-                      default=None, type=str)
+                      default='/home/zhangwei/PycharmProjects/DL/tf-faster-rcnn/experiments/cfgs/res101.yml', type=str)
   parser.add_argument('--weight', dest='weight',
                       help='initialize with pretrained model weights',
+                      default='/home/zhangwei/PycharmProjects/DL/tf-faster-rcnn/data/imagenet_weights/res101.ckpt',
                       type=str)
   parser.add_argument('--imdb', dest='imdb_name',
                       help='dataset to train on',
@@ -41,20 +42,20 @@ def parse_args():
                       default='voc_2007_test', type=str)
   parser.add_argument('--iters', dest='max_iters',
                       help='number of iterations to train',
-                      default=70000, type=int)
+                      default=50000, type=int)
   parser.add_argument('--tag', dest='tag',
                       help='tag of the model',
                       default=None, type=str)
   parser.add_argument('--net', dest='net',
                       help='vgg16, res50, res101, res152, mobile',
-                      default='res50', type=str)
+                      default='res101', type=str)
   parser.add_argument('--set', dest='set_cfgs',
-                      help='set config keys', default=None,
+                      help='set config keys', default=['ANCHOR_SCALES', '[8,16,32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'TRAIN.STEPSIZE', '[50000]'],
                       nargs=argparse.REMAINDER)
 
-  if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+  # if len(sys.argv) == 1:
+  #   parser.print_help()
+  #   sys.exit(1)
 
   args = parser.parse_args()
   return args
