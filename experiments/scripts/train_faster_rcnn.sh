@@ -5,9 +5,14 @@ set -e
 
 export PYTHONUNBUFFERED="True"
 
-GPU_ID=$1
-DATASET=$2
-NET=$3
+#BUILD=HELLO
+
+GPU_ID_INPUT=$1
+GPU_ID=${GPU_ID_INPUT:-0}
+DATASET_INPUT=$2
+DATASET=${DATASET_INLPUT:-pascal_voc_0712}
+NET_INPUT=$3
+NET=${NET_INPUT:-res101}
 
 array=( $@ )
 len=${#array[@]}
@@ -18,6 +23,7 @@ case ${DATASET} in
   pascal_voc)
     TRAIN_IMDB="voc_2007_trainval"
     TEST_IMDB="voc_2007_test"
+#    TEST_IMDB="voc_2007_test"
     STEPSIZE="[50000]"
     ITERS=70000
     ANCHORS="[8,16,32]"
