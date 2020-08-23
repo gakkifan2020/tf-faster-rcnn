@@ -177,34 +177,34 @@ class pascal_voc(imdb):
     format.
     """
     # 下面是其中一个xml文件
-    '''
-    <annotation>
-        <folder>所有均压环图片</folder>
-        <filename>300002.JPG</filename>
-        <path>C:\Users\Ilearn\Desktop\所有均压环图片\300002.JPG</path>
-        <source>
-            <database>Unknown</database>
-        </source>
-        <size>
-            <width>6000</width>
-            <height>3376</height>
-            <depth>3</depth>
-        </size>
-        <segmented>0</segmented>
-        <object>
-            <name>tilt</name>
-            <pose>Unspecified</pose>
-            <truncated>0</truncated>
-            <difficult>0</difficult>
-            <bndbox>
-                <xmin>2554</xmin>
-                <ymin>552</ymin>
-                <xmax>3914</xmax>
-                <ymax>964</ymax>
-            </bndbox>
-        </object>
-    </annotation>
-    '''
+    # '''
+    # <annotation>
+    #     <folder>所有均压环图片</folder>
+    #     <filename>300002.JPG</filename>
+    #     <path>C:\Users\Ilearn\Desktop\所有均压环图片\300002.JPG</path>
+    #     <source>
+    #         <database>Unknown</database>
+    #     </source>
+    #     <size>
+    #         <width>6000</width>
+    #         <height>3376</height>
+    #         <depth>3</depth>
+    #     </size>
+    #     <segmented>0</segmented>
+    #     <object>
+    #         <name>tilt</name>
+    #         <pose>Unspecified</pose>
+    #         <truncated>0</truncated>
+    #         <difficult>0</difficult>
+    #         <bndbox>
+    #             <xmin>2554</xmin>
+    #             <ymin>552</ymin>
+    #             <xmax>3914</xmax>
+    #             <ymax>964</ymax>
+    #         </bndbox>
+    #     </object>
+    # </annotation>
+    # '''
     # / data / VOCdevkit +'year'/'VOC' + self._year/Annotations/000001.xml
     filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
     tree = ET.parse(filename)
