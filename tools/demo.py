@@ -102,7 +102,7 @@ def demo(sess, net, image_name):
 def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='Tensorflow Faster R-CNN demo')
-    parser.add_argument('--net', dest='demo_net', help='Network to use [vgg16 res101]',
+    parser.add_argument('--net', dest='demonet', help='Network to use [vgg16 res101]',
                         choices=NETS.keys(), default='res101')
     parser.add_argument('--dataset', dest='dataset', help='Trained dataset [pascal_voc pascal_voc_0712]',
                         choices=DATASETS.keys(), default='voc_2007_trainval')
@@ -115,10 +115,11 @@ if __name__ == '__main__':
     args = parse_args()
 
     # model path
-    demonet = args.demo_net
-    dataset = args.dataset
-    tfmodel = os.path.join('output', demonet, DATASETS[dataset][0], 'default',
-                              NETS[demonet][0])
+    tfmodel = '/home/zhangwei/PycharmProjects/DL/tf-faster-rcnn/output/res101/voc_2007_trainval/default/res101_faster_rcnn_iter_50000.ckpt'
+    # demonet = args.demo_net
+    # dataset = args.dataset
+    # tfmodel = os.path.join('output', demonet, DATASETS[dataset][0], 'default',
+    #                           NETS[demonet][0])
 
 
     if not os.path.isfile(tfmodel + '.meta'):
@@ -132,9 +133,9 @@ if __name__ == '__main__':
     # init session
     sess = tf.Session(config=tfconfig)
     # load network
-    if demonet == 'vgg16':
+    if args.demonet == 'vgg16':
         net = vgg16()
-    elif demonet == 'res101':
+    elif args.demonet == 'res101':
         net = resnetv1(num_layers=101)
     else:
         raise NotImplementedError
