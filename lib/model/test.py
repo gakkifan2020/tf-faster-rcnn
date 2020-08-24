@@ -23,7 +23,7 @@ from model.config import cfg, get_output_dir
 from model.bbox_transform import clip_boxes, bbox_transform_inv
 from model.nms_wrapper import nms
 
-# '''用于测试的时候调用模型进行测试,在tools/test_net.py调用'''
+# 测试的时候调用模型进行测试,供tools/test_net.py 调用
 
 
 def _get_image_blob(im):
@@ -36,6 +36,8 @@ def _get_image_blob(im):
     im_scale_factors (list): list of image scales (relative to im) used
       in the image pyramid
   """
+  # 1  41~61 行, 先把图片 resize 成 小边 600 , 大边 1000 的尺寸
+
   im_orig = im.astype(np.float32, copy=True)
   # 去均值
   im_orig -= cfg.PIXEL_MEANS

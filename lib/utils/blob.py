@@ -13,7 +13,7 @@ from __future__ import print_function
 import numpy as np
 import cv2
 
-# ims是缩放后的图片列表
+# ims是缩放后的多张图片  list
 # 作用：将缩放后的图片信息存到blob中
 def im_list_to_blob(ims):
   """Convert a list of images into a network input.
