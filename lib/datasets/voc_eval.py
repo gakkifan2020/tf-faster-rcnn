@@ -115,7 +115,8 @@ def voc_eval(detpath,
   # if cachedir不存在就创建一个
   if not os.path.isdir(cachedir):
     os.mkdir(cachedir)
-  cachefile = os.path.join(cachedir, '%s_annots.pkl' % imagesetfile)
+  cachefile = os.path.join(cachedir, '%s_annots.pkl' % imagesetfile.split("/")[-1].split(".")[0])
+  # cachefile = os.path.join(cachedir, '%s_annots.pkl' % imagesetfile)
   # read list of images
   with open(imagesetfile, 'r') as f:
     lines = f.readlines()       # 读取所有图片名
