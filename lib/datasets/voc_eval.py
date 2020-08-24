@@ -138,7 +138,7 @@ def voc_eval(detpath,
       pickle.dump(recs, f)      # dump是序列化保存，load是序列化解析
   else:     # 如果已经有了cachefile缓存文件，直接读取
     # load
-    with open(cachefile, 'rb+') as f:
+    with open(cachefile, 'rb') as f:
       try:
         recs = pickle.load(f)
       except:
