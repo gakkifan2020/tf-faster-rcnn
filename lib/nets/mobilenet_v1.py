@@ -18,6 +18,8 @@ from collections import namedtuple
 from nets.network import Network
 from model.config import cfg
 
+# https://www.cnblogs.com/hellcat/p/9726528.html
+# 分离卷积模块
 def separable_conv2d_same(inputs, kernel_size, stride, rate=1, scope=None):
   """Strided 2-D separable convolution with 'SAME' padding.
   Args:
@@ -29,6 +31,9 @@ def separable_conv2d_same(inputs, kernel_size, stride, rate=1, scope=None):
   Returns:
     output: A 4-D tensor of size [batch, height_out, width_out, channels] with
       the convolution output.
+    inputs: 是size为[batch_size, height, width, channels]的tensor
+    kernel_size: 是filter的size [kernel_height, kernel_width]，如果filter的长宽一样可以只填入一个int值。
+    depth_multiplier：深度因子
   """
 
   # By passing filters=None
@@ -60,6 +65,7 @@ Conv = namedtuple('Conv', ['kernel', 'stride', 'depth'])
 DepthSepConv = namedtuple('DepthSepConv', ['kernel', 'stride', 'depth'])
 
 # _CONV_DEFS specifies the MobileNet body
+# 网络结构
 _CONV_DEFS = [
     Conv(kernel=3, stride=2, depth=32),
     DepthSepConv(kernel=3, stride=1, depth=64),
@@ -82,7 +88,7 @@ _CONV_DEFS = [
 def mobilenet_v1_base(inputs,
                       conv_defs,
                       starting_layer=0,
-                      min_depth=8,
+                      min_depth=8,          # min_depth:所有卷积操作的最小深度值(通道数)。
                       depth_multiplier=1.0,
                       output_stride=None,
                       reuse=None,
@@ -111,6 +117,7 @@ def mobilenet_v1_base(inputs,
   Raises:
     ValueError: if depth_multiplier <= 0, or convolution type is not defined.
   """
+  # 通道数最小为8
   depth = lambda d: max(int(d * depth_multiplier), min_depth)
   end_points = {}
 
@@ -133,6 +140,7 @@ def mobilenet_v1_base(inputs,
     for i, conv_def in enumerate(conv_defs):
       end_point_base = 'Conv2d_%d' % (i + starting_layer)
 
+      # 默认为空，未使用空洞卷积
       if output_stride is not None and current_stride == output_stride:
         # If we have reached the target output_stride, then we need to employ
         # atrous convolution with stride=1 and multiply the atrous rate by the
@@ -141,27 +149,30 @@ def mobilenet_v1_base(inputs,
         layer_rate = rate
         rate *= conv_def.stride
       else:
+          # 未使用
         layer_stride = conv_def.stride
         layer_rate = 1
         current_stride *= conv_def.stride
 
+          # 定义第一层conv层
       if isinstance(conv_def, Conv):
         end_point = end_point_base
         net = resnet_utils.conv2d_same(net, depth(conv_def.depth), conv_def.kernel,
                           stride=conv_def.stride,
                           scope=end_point)
 
+        # 定义DW层
       elif isinstance(conv_def, DepthSepConv):
         end_point = end_point_base + '_depthwise'
         
-        net = separable_conv2d_same(net, conv_def.kernel,
+        net = separable_conv2d_same(net, conv_def.kernel,           # depthwise
                                     stride=layer_stride,
                                     rate=layer_rate,
                                     scope=end_point)
 
         end_point = end_point_base + '_pointwise'
 
-        net = slim.conv2d(net, depth(conv_def.depth), [1, 1],
+        net = slim.conv2d(net, depth(conv_def.depth), [1, 1],           # pointwise
                           stride=1,
                           scope=end_point)
 
@@ -184,13 +195,16 @@ def mobilenet_v1_arg_scope(is_training=True,
   }
 
   # Set weight_decay for weights in Conv and DepthSepConv layers.
+  # 指定权重初始化和正则化方式
   weights_init = tf.truncated_normal_initializer(stddev=stddev)
   regularizer = tf.contrib.layers.l2_regularizer(cfg.MOBILENET.WEIGHT_DECAY)
+  # 是否对DW进行正则化，默认为不进行，论文中也不推荐进行正则化
   if cfg.MOBILENET.REGU_DEPTH:
     depthwise_regularizer = regularizer
   else:
     depthwise_regularizer = None
 
+    # 设置默认参数
   with slim.arg_scope([slim.conv2d, slim.separable_conv2d],
                       trainable=is_training,
                       weights_initializer=weights_init,
@@ -212,7 +226,8 @@ class mobilenetv1(Network):
     self._scope = 'MobilenetV1'
 
   def _image_to_head(self, is_training, reuse=None):
-    # Base bottleneck
+      # Base bottleneck
+      # FIXED_LAYERS默认为5 reuse默认为none
     assert (0 <= cfg.MOBILENET.FIXED_LAYERS <= 12)
     net_conv = self._image
     if cfg.MOBILENET.FIXED_LAYERS > 0:
@@ -254,6 +269,7 @@ class mobilenetv1(Network):
 
     for v in variables:
       # exclude the first conv layer to swap RGB to BGR
+      # 把第一层加入固定参数列表中，其余层加入重载参数列表中
       if v.name == (self._scope + '/Conv2d_0/weights:0'):
         self._variables_to_fix[v.name] = v
         continue
