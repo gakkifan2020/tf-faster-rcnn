@@ -134,7 +134,7 @@ def voc_eval(detpath,
           i + 1, len(imagenames)))
     # save
     print('Saving cached annotations to {:s}'.format(cachefile))
-    with open(cachefile, 'w') as f:
+    with open(cachefile, 'wb') as f:
       pickle.dump(recs, f)      # dump是序列化保存，load是序列化解析
   else:     # 如果已经有了cachefile缓存文件，直接读取
     # load

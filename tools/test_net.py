@@ -52,12 +52,12 @@ def parse_args():
                       default='res101', type=str)
   parser.add_argument('--set', dest='set_cfgs',
                       help='set config keys',
-                      default=['ANCHOR_SCALES', '[8,16,32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'TEST.STEPSIZE', '[5]'],
+                      default=None,
                       nargs=argparse.REMAINDER)
 
-  if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+  # if len(sys.argv) == 1:
+  #   parser.print_help()
+  #   sys.exit(1)
 
   args = parser.parse_args()
   return args
@@ -68,6 +68,7 @@ if __name__ == '__main__':
   print('Called with args:')
   print(args)
 
+  #   读取配置文件,得到配置
   if args.cfg_file is not None:
     cfg_from_file(args.cfg_file)
   if args.set_cfgs is not None:
@@ -78,6 +79,7 @@ if __name__ == '__main__':
 
   # if has model, get the name from it
   # if does not, then just use the initialization weights
+  # 读取模型名
   if args.model:
     filename = os.path.splitext(os.path.basename(args.model))[0]
   else:
