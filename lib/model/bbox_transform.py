@@ -11,17 +11,27 @@ from __future__ import print_function
 import numpy as np
 import tensorflow as tf
 
-def bbox_transform(ex_rois, gt_rois):
+# 计算与anchor有最大IOU的GT的偏移量
+# ex_rois：表示anchor；gt_rois：表示GT
+def bbox_transform(ex_rois, gt_rois):     # 这里的gt是：与anchor最匹配的gt，不是所有的gt .anchor_target_layer有调用
+  # anchor的坐标
+  # 计算每一个anchor的w和h
   ex_widths = ex_rois[:, 2] - ex_rois[:, 0] + 1.0
   ex_heights = ex_rois[:, 3] - ex_rois[:, 1] + 1.0
+  # 计算每一个anchor的中心点x和y
   ex_ctr_x = ex_rois[:, 0] + 0.5 * ex_widths
   ex_ctr_y = ex_rois[:, 1] + 0.5 * ex_heights
 
+  # gt的坐标
+  # 计算每一个gt的w和h
   gt_widths = gt_rois[:, 2] - gt_rois[:, 0] + 1.0
   gt_heights = gt_rois[:, 3] - gt_rois[:, 1] + 1.0
+
+  # 计算每一个gt的中心点x和y
   gt_ctr_x = gt_rois[:, 0] + 0.5 * gt_widths
   gt_ctr_y = gt_rois[:, 1] + 0.5 * gt_heights
 
+  # 偏移量
   targets_dx = (gt_ctr_x - ex_ctr_x) / ex_widths
   targets_dy = (gt_ctr_y - ex_ctr_y) / ex_heights
   targets_dw = np.log(gt_widths / ex_widths)
@@ -31,23 +41,31 @@ def bbox_transform(ex_rois, gt_rois):
     (targets_dx, targets_dy, targets_dw, targets_dh)).transpose()
   return targets
 
-
+# 根据anchor和偏移量得到一个改善后的anchor
 def bbox_transform_inv(boxes, deltas):
+  # 假设图像尺寸=[h,w,3]
+  # boxes=[h*w*9,4] 预设anchors的坐标 [xmin,ymin,xmax,ymax]
+  # deltas=[h*w*9,4] 预测的坐标偏移量
   if boxes.shape[0] == 0:
     return np.zeros((0, deltas.shape[1]), dtype=deltas.dtype)
 
+  # 计算宽高和中心点坐标
   boxes = boxes.astype(deltas.dtype, copy=False)
+  # 改为(x,y,w,h)的格式
   widths = boxes[:, 2] - boxes[:, 0] + 1.0
   heights = boxes[:, 3] - boxes[:, 1] + 1.0
   ctr_x = boxes[:, 0] + 0.5 * widths
   ctr_y = boxes[:, 1] + 0.5 * heights
 
+  # ::单独提取为一列
+  # 0::4表示先取第一个元素，以后每4个取一个
   dx = deltas[:, 0::4]
   dy = deltas[:, 1::4]
   dw = deltas[:, 2::4]
   dh = deltas[:, 3::4]
-  
-  pred_ctr_x = dx * widths[:, np.newaxis] + ctr_x[:, np.newaxis]
+
+  # 计算预测后的中心点和w,h
+  pred_ctr_x = dx * widths[:, np.newaxis] + ctr_x[:, np.newaxis]      # np.newaxis,表示将widths增加一维，使得其能够相加
   pred_ctr_y = dy * heights[:, np.newaxis] + ctr_y[:, np.newaxis]
   pred_w = np.exp(dw) * widths[:, np.newaxis]
   pred_h = np.exp(dh) * heights[:, np.newaxis]
@@ -68,6 +86,7 @@ def bbox_transform_inv(boxes, deltas):
 def clip_boxes(boxes, im_shape):
   """
   Clip boxes to image boundaries.
+      调整boxes的坐标，使其全部在图像的范围内,全部大于0，小于图像宽高
   """
 
   # x1 >= 0
